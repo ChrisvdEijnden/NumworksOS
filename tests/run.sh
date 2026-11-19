@@ -150,7 +150,7 @@ t_loader() {
     make -s loader BUILD="$D/loader" &&
     make -s loader BUILD="$D/quick" LOADER_DEFS=-DLOADER_BUSY_TIMEOUT_MS=5 > /dev/null &&
     make -s -j"$JOBS" BUILD="$D/os" > /dev/null &&
-    python3 "$T/loader/loader_emu.py" "$D/loader/loader.bin" "$D/os/numworks_os_n0120.bin" "$D/quick/loader.bin"
+    python3 "$T/loader/loader_emu.py" "$D/loader/loader.bin" "$D/os/numworks_os_n0110.bin" "$D/quick/loader.bin"
 }
 
 t_skin() {

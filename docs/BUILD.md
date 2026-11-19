@@ -46,7 +46,7 @@ be pasted into zsh, which by default doesn't treat `#` as a comment.
 make -j4
 ```
 
-The output is `build/numworks_os_n0120.bin` (and `.elf`, `.map`).
+The output is `build/numworks_os_n0110.bin` (and `.elf`, `.map`).
 
 Without MicroPython the Python app and `run` say Python isn't available;
 everything else works.

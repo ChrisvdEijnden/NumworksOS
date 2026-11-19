@@ -12,7 +12,7 @@ OBJCOPY := $(CROSS)objcopy
 OBJDUMP := $(CROSS)objdump
 SIZE    := $(CROSS)size
 
-TARGET  := numworks_os_n0120
+TARGET  := numworks_os_n0110
 BUILD   := build
 
 CPU     := cortex-m7
