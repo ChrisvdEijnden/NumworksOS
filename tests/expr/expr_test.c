@@ -24,6 +24,8 @@ int main(void) {
     ok("2E3", 0, 2000);       ok("1.5e-2", 0, 0.015);   ok("2e", 0, 2*M_E);
     ok(".5+.25", 0, 0.75);    ok(" 1 + 2 ", 0, 3);      ok("--3", 0, 3);
     ok("10^2", 0, 100);       ok("e^(ln(5))", 0, 5);    ok("2 x", 4, 8);
+    ok("xx", 3, 9);           ok("xsin(x)", 1, sin(1)); ok("xpi", 2, 2*M_PI);
+    ok("pix", 2, 2*M_PI);     ok("2xe", 1, 2*M_E);      ok("exp(1)x", 2, 2*M_E);
     ok("sqrt(-1)", 0, NAN);   ok("1/0", 0, INFINITY);   ok("ln(0)", 0, -INFINITY);
     err("", EXPR_ERR_EMPTY);  err("   ", EXPR_ERR_EMPTY);
     err("1+", EXPR_ERR_SYNTAX); err("*2", EXPR_ERR_SYNTAX); err("2 $ 3", EXPR_ERR_SYNTAX);

@@ -66,7 +66,7 @@ SRAM  0x2001_0000 150 KB  framebuffer (320×240×2)
 Internal flash (64 KB on the F730x8) holds only our loader, at
 0x0800_0000 in the first 16 KB sector (`loader/`, see *Boot*).
 
-`linker/numworks_n0120.ld` is the linker script; it asserts the stack
+`linker/numworks_n0110.ld` is the linker script; it asserts the stack
 and heap minimums at link time. The stack is filled with a pattern at
 boot, so `mem` can show how deep it has been.
 
@@ -455,7 +455,6 @@ files again.
 | `cat <file>` | Print a file |
 | `touch <file>` | Create an empty file |
 | `rm <file>` | Delete a file |
-| `mkdir <name>` | Same as `touch` (the file system is flat) |
 | `echo <text>` | Print text |
 | `run <file.py>` | Run a Python script |
 | `mem` | Stack peak, C heap, Python heap and flash usage |

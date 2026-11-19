@@ -4,11 +4,8 @@ TOOLS = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'to
 bridge = subprocess.Popen([os.path.abspath(sys.argv[1])], stdout=subprocess.PIPE, text=True)
 port = bridge.stdout.readline().strip()
 fails = 0
-def run(*args, tool='upload.py', cwd=None):
-    if tool == 'upload.py':
-        cmd = [sys.executable, os.path.join(TOOLS, tool), '--port', port, *args]
-    else:
-        cmd = [sys.executable, os.path.join(TOOLS, tool), '--port', port, *args]
+def run(*args, cwd=None):
+    cmd = [sys.executable, os.path.join(TOOLS, 'upload.py'), '--port', port, *args]
     return subprocess.run(cmd, capture_output=True, text=True, cwd=cwd, timeout=30)
 def check(cond, what, detail=''):
     global fails
@@ -24,15 +21,15 @@ try:
     r = run('upload', os.path.join(work, 'max.bin')); check(r.returncode == 0, 'upload a 100 KB file (the limit), streamed to flash', r.stderr)
     with open(os.path.join(work, 'toobig.bin'), 'wb') as f: f.write(b'x' * (100 * 1024 + 1))
     r = run('upload', os.path.join(work, 'toobig.bin')); check(r.returncode == 1 and 'too large' in r.stderr, 'upload of 100 KB + 1 byte refused', r.stderr)
-    r = run('upload', os.path.join(work, 'hello.py'), 'script.py', tool='transfer.py'); check(r.returncode == 0, 'transfer.py upload under another name', r.stderr)
+    r = run('upload', os.path.join(work, 'hello.py'), 'script.py'); check(r.returncode == 0, 'upload under another name', r.stderr)
     r = run('list'); check(r.returncode == 0 and 'bin.dat' in r.stdout and '5000' in r.stdout and 'script.py' in r.stdout, 'list shows all files with sizes', r.stdout + r.stderr)
     dl = tempfile.mkdtemp()
     r = run('download', 'bin.dat', cwd=dl)
     got = open(os.path.join(dl, 'bin.dat'), 'rb').read() if r.returncode == 0 else b''
     check(got == data, 'download returns the exact 5000 bytes (was cut at 512)', r.stderr)
-    r = run('download', 'max.bin', tool='transfer.py', cwd=dl)
+    r = run('download', 'max.bin', cwd=dl)
     got = open(os.path.join(dl, 'max.bin'), 'rb').read() if r.returncode == 0 else b''
-    check(got == big, 'transfer.py download of the 100 KB file, identical', r.stderr)
+    check(got == big, 'download of the 100 KB file, identical', r.stderr)
     r = run('delete', 'bin.dat'); check(r.returncode == 0, 'delete existing file', r.stderr)
     r = run('delete', 'bin.dat'); check(r.returncode == 1 and 'not_found' in r.stderr, 'delete missing file reports ERR (was always OK)', r.stderr)
     r = run('download', 'nope.txt'); check(r.returncode == 1 and 'not_found' in r.stderr, 'download missing file reports ERR', r.stderr)

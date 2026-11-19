@@ -92,25 +92,30 @@ static double parse_primary(parser_t *ps) {
     if (is_digit(c) || (c == '.' && is_digit(ps->p[1])))
         return parse_number(ps);
     if (is_alpha(c)) {
-        const char *s = ps->p;
-        while (is_alpha(*ps->p) || is_digit(*ps->p)) ps->p++;
-        size_t n = (size_t)(ps->p - s);
-        if (n == 1 && s[0] == 'x') return ps->x;
-        if (n == 1 && s[0] == 'e') return M_E;
-        if (n == 2 && strncmp(s, "pi", 2) == 0) return M_PI;
-        if (n == 3 && strncmp(s, "ans", 3) == 0) return s_ans;
-        for (size_t i = 0; i < sizeof(FUNCS) / sizeof(FUNCS[0]); i++) {
-            if (strlen(FUNCS[i].name) == n && strncmp(s, FUNCS[i].name, n) == 0) {
-                skip_ws(ps);
-                if (*ps->p != '(') return fail(ps, EXPR_ERR_SYNTAX);
-                ps->p++;
-                double arg = parse_expr(ps);
-                skip_ws(ps);
-                if (*ps->p != ')') return fail(ps, EXPR_ERR_PAREN);
-                ps->p++;
-                return FUNCS[i].fn(arg);
+        const char *s = ps->p, *end = s;
+        while (is_alpha(*end) || is_digit(*end)) end++;
+        /* Keys type "xsin(x)" without spaces: take the longest known name
+         * the run starts with; implicit multiplication does the rest */
+        for (size_t n = (size_t)(end - s); n > 0; n--) {
+            ps->p = s + n;
+            if (n == 1 && s[0] == 'x') return ps->x;
+            if (n == 1 && s[0] == 'e') return M_E;
+            if (n == 2 && strncmp(s, "pi", 2) == 0) return M_PI;
+            if (n == 3 && strncmp(s, "ans", 3) == 0) return s_ans;
+            for (size_t i = 0; i < sizeof(FUNCS) / sizeof(FUNCS[0]); i++) {
+                if (strlen(FUNCS[i].name) == n && strncmp(s, FUNCS[i].name, n) == 0) {
+                    skip_ws(ps);
+                    if (*ps->p != '(') return fail(ps, EXPR_ERR_SYNTAX);
+                    ps->p++;
+                    double arg = parse_expr(ps);
+                    skip_ws(ps);
+                    if (*ps->p != ')') return fail(ps, EXPR_ERR_PAREN);
+                    ps->p++;
+                    return FUNCS[i].fn(arg);
+                }
             }
         }
+        ps->p = end;
         return fail(ps, EXPR_ERR_NAME);
     }
     if (c == ')') return fail(ps, EXPR_ERR_PAREN);

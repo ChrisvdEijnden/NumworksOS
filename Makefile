@@ -105,7 +105,7 @@ else
 endif
 
 # ── Linker flags ─────────────────────────────────────────────────
-LDSCRIPT  := linker/numworks_n0120.ld
+LDSCRIPT  := linker/numworks_n0110.ld
 
 # ── Library resolution ───────────────────────────────────────────
 # arm-none-eabi-gcc (Homebrew) ships only the compiler, not newlib.

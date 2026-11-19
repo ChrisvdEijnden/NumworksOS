@@ -246,6 +246,15 @@ int main(void) {
     }
     check(boundary_ok == 5, "responses of 64/128/192/256/320 bytes all arrive (ZLP sent)");
 
+    /* A replacement that can't fit even without the old file keeps it */
+    static uint8_t fill[60 * 1024];
+    flashfs_write("pad.bin", fill, 40 * 1024);
+    flashfs_write("big.bin", fill, sizeof fill);
+    rlen = 0;
+    bulk_write("SEND big.bin 80000\n", 19);
+    check(read_until("ERR no_space\r\n") && flashfs_exists("big.bin"), "SEND too big to replace: ERR, old file kept");
+    flashfs_delete("pad.bin");
+
     rlen = 0;
     bulk_write("DEL big.bin\n", 12);
     check(read_until("OK\r\n"), "DEL big.bin: OK");

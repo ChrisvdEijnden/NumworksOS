@@ -8,7 +8,7 @@
  *  - Edit with full keypad input (ALPHA mode for letters)
  *  - Save back to internal FS (SHIFT+EXE)
  *  - New file creation
- *  - Files up to the file system's limit (8 KB)
+ *  - Files up to EDITOR_MAX_BYTES (8 KB), held in RAM
  *  - Scrolls vertically and horizontally to keep the cursor in view
  *  - Line numbers in a grey margin; Python files in colour (keywords,
  *    numbers, strings, comments), the colours of NumWorks' own editor
@@ -319,6 +319,8 @@ static void naming_key(key_code_t k) {
     }
     draw_bars();
 }
+
+bool text_editor_modified(void) { return s_modified; }
 
 void text_editor_new(void) {
     s_tlen=0; s_cpos=0; s_scroll=0; s_hscroll=0; s_modified=false;

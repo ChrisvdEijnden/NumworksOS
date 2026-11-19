@@ -290,7 +290,7 @@ use NumWorks' recovery (*Restore Official Firmware* below).
 **Read this before flashing.**
 
 - The image is linked to execute from the external QSPI flash at
-  `0x90000000` (`linker/numworks_n0120.ld`).
+  `0x90000000` (`linker/numworks_n0110.ld`).
 - The last 256 KB of the QSPI flash (from `0x907C0000`) hold the
   file system; the linker refuses images that would overlap it. On the
   first start the calculator asks before formatting it.
@@ -364,13 +364,12 @@ Firefox or Safari, or on phones.
 
 ```bash
 python tools/upload.py --port /dev/ttyACM0 list
-python tools/upload.py --port /dev/ttyACM0 upload hello.py
+python tools/upload.py --port /dev/ttyACM0 upload hello.py [name-on-calculator]
 python tools/upload.py --port /dev/ttyACM0 download notes.txt
 python tools/upload.py --port /dev/ttyACM0 delete notes.txt
 ```
 
-`tools/transfer.py` does the same with a slightly different command
-line (`upload <local> [<name on calculator>]`). Files are at most 100 KB
+Files are at most 100 KB
 (all files together about 112 KB), and names at most 23 characters
 without spaces. Uploading over an existing file keeps the old one until
 the new one is complete, unless both don't fit.

@@ -15,7 +15,6 @@ typedef struct {
     const char *name;
     uint8_t     prio;
     volatile uint8_t waiting;   /* ticks left to sleep; decremented by SysTick */
-    uint32_t    run_count;
 } task_t;
 
 void  scheduler_init(void);

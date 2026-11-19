@@ -3,7 +3,7 @@
 NumWorks OS — PC file transfer over the calculator's USB serial port.
 
 Usage:
-  python upload.py --port COM3 upload hello.py
+  python upload.py --port COM3 upload hello.py [name-on-calculator]
   python upload.py --port /dev/ttyACM0 download hello.py
   python upload.py --port /dev/ttyACM0 list
   python upload.py --port /dev/ttyACM0 delete hello.py
@@ -129,6 +129,7 @@ def main(argv=None):
     p.add_argument('--port', help='serial port (auto-detected if omitted)')
     p.add_argument('command', choices=['list', 'upload', 'download', 'delete'])
     p.add_argument('filename', nargs='?')
+    p.add_argument('dest', nargs='?', help='upload: name on the calculator')
     args = p.parse_args(argv)
     if args.command != 'list' and not args.filename:
         p.error(f"{args.command} needs a filename")
@@ -141,7 +142,7 @@ def main(argv=None):
             elif args.command == 'upload':
                 with open(args.filename, 'rb') as f:
                     data = f.read()
-                name = os.path.basename(args.filename)
+                name = args.dest or os.path.basename(args.filename)
                 dev.upload(name, data)
                 print(f"Uploaded {name} ({len(data)} bytes)")
             elif args.command == 'download':

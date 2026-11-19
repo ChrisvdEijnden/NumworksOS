@@ -10,3 +10,6 @@ bool text_editor_open(const char *name);
 
 /* Start an empty, unnamed document (a name is asked on first save) */
 void text_editor_new(void);
+
+/* Changes not saved yet (opening or starting another document drops them) */
+bool text_editor_modified(void);

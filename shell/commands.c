@@ -2,7 +2,7 @@
  * NumWorks OS — Shell Commands
  * File: shell/commands.c
  *
- * Commands: help ls cat touch rm mkdir echo run mem reboot fm
+ * Commands: help ls cat touch rm echo run mem bat fm reboot
  * Each command is a small static function.
  * Code size target: < 6 KB
  * ================================================================ */
@@ -43,7 +43,6 @@ static void cmd_help(void) {
     shell_puts("  cat <file>      print file\n");
     shell_puts("  touch <file>    create empty file\n");
     shell_puts("  rm <file>       delete file\n");
-    shell_puts("  mkdir <dir>     create directory (alias)\n");
     shell_puts("  echo <text>     print text\n");
     shell_puts("  run <file.py>   execute Python script\n");
     shell_puts("  mem             show memory usage\n");
@@ -88,8 +87,8 @@ static void cmd_cat(void) {
 static void cmd_touch(void) {
     if (s_argc < 2) { shell_puts("Usage: touch <file>\n"); return; }
     if (flashfs_exists(s_argv[1])) { return; }
-    flashfs_write(s_argv[1], "", 0);
-    shell_print("Created: %s\n", s_argv[1]);
+    if (flashfs_write(s_argv[1], "", 0) < 0) shell_print("touch: %s: cannot create\n", s_argv[1]);
+    else shell_print("Created: %s\n", s_argv[1]);
 }
 
 static void cmd_rm(void) {
@@ -173,7 +172,6 @@ static const cmd_entry_t s_cmds[] = {
     {"cat",    cmd_cat   },
     {"touch",  cmd_touch },
     {"rm",     cmd_rm    },
-    {"mkdir",  cmd_touch },  /* Alias — flat FS, dirs are prefix convention */
     {"echo",   cmd_echo  },
     {"run",    cmd_run_script },
     {"mem",    cmd_mem   },

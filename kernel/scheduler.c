@@ -47,7 +47,6 @@ void scheduler_run_next(void) {
     if (best < 0) return;
 
     s_current = (uint8_t)best;
-    s_tasks[s_current].run_count++;
     s_tasks[s_current].fn();
 }
 

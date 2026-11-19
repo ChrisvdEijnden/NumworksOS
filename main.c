@@ -1,7 +1,7 @@
 /* ================================================================
- * NumWorks OS — Main Entry Point (N0120 Custom Firmware)
+ * NumWorks OS — Main Entry Point (N0110)
  * Boot sequence:
- *   HAL → FS → USB CDC → USB Host → Kernel → Home → Loop
+ *   HAL → Kernel → FS → USB CDC → MicroPython → apps → Home → Loop
  * ================================================================ */
 #include "hal/hal.h"
 #include "hal/display.h"

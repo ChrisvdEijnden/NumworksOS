@@ -1,15 +1,9 @@
 /* ================================================================
- * NumWorks OS — Kernel (Extended for N0120 Custom Firmware)
+ * NumWorks OS — Kernel
  * ================================================================ */
 #pragma once
 #include <stdint.h>
 #include <stdbool.h>
-
-typedef enum {
-    KERNEL_BOOT,
-    KERNEL_RUNNING,
-    KERNEL_FAULT
-} kernel_state_t;
 
 typedef enum {
     APP_HOME = 0,
@@ -35,12 +29,6 @@ typedef struct {
     uint8_t  action;   /* 0=press (auto-repeat also arrives as press), 1=release */
     uint16_t _pad;
 } kernel_event_t;
-
-typedef struct {
-    kernel_state_t state;
-    app_state_t    app_state;
-    uint32_t       idle_count;
-} kernel_t;
 
 void  kernel_init(void);
 void  kernel_run(void);

@@ -57,7 +57,7 @@ fails there, its log in `tests/build/logs/` says why.
 | `usb` | `usb/usb_device.c`, `usb_cdc.c` | Enumeration like Linux does it, then the transfer protocol, on a simulated OTG core |
 | `apps` | calculator, statistics, games, settings | History, statistics, Snake, 2048, saved settings, the language switch |
 | `python` | `micropython-port/`, `apps/python_app/` | The MicroPython port: REPL, `input()`, imports, files, modules |
-| `transfer` | `usb/usb_cdc.c`, `tools/upload.py`, `transfer.py` | The PC tools against the device side over a pseudo-terminal |
+| `transfer` | `usb/usb_cdc.c`, `tools/upload.py` | The PC tools against the device side over a pseudo-terminal |
 | `web` | `tools/web/uploader.html` | The browser uploader in headless Chromium, with a mocked serial port |
 | `loader` | `loader/loader.c` | The internal-flash loader in an emulated Cortex-M7 (Unicorn) with models of the QSPI controller, the AT25SF641 and the keyboard |
 | `skin` | `sim/sim_skin.c` | Reading the layout of NumWorks' simulator picture (screen and key rectangles) |

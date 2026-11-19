@@ -59,7 +59,7 @@ t_functions() {
 }
 t_editor() {
     $CC $SAN -o "$D/t" "$T/functions/ed2_test.c" "$T/functions/ed_wrap.c" "$T/common/kbonly_wrap.c" \
-        ui/lang.c $UI && "$D/t"
+        ui/filemanager.c ui/lang.c $UI && "$D/t"
 }
 t_scheduler() {
     $CC $SAN -Ikernel -o "$D/t" "$T/scheduler/sched_test.c" kernel/scheduler.c && "$D/t"

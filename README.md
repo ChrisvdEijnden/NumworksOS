@@ -95,7 +95,7 @@ numworks-os/
 ├── Makefile
 ├── main.c                      Boot sequence
 ├── linker/
-│   └── numworks_n0120.ld       Linker script (QSPI XIP @ 0x90000000)
+│   └── numworks_n0110.ld       Linker script (QSPI XIP @ 0x90000000)
 ├── loader/                     Internal-flash loader: sets up the QSPI
 │                               flash and starts the OS (or recovery)
 ├── sim/                        Simulator: the OS in a window on a PC
@@ -136,8 +136,7 @@ numworks-os/
 │   └── <app>/                  One directory per app
 ├── tools/
 │   ├── web/uploader.html       PC file transfer from Chrome or Edge
-│   ├── upload.py               PC file transfer, command line
-│   └── transfer.py             Same, alternative command line
+│   └── upload.py               PC file transfer, command line
 ├── tests/                      Host tests (`make test`), see tests/README.md
 └── docs/
     ├── BUILD.md                Building, flashing, recovery

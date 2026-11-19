@@ -28,7 +28,7 @@
 #include "../apps/games/games.h"
 #include <string.h>
 
-static kernel_t  g_kernel;
+static app_state_t s_app = APP_HOME;
 static volatile bool s_redraw_pending = false;
 extern volatile uint32_t g_tick_ms, g_tick_step;
 static uint32_t s_last_input;   /* tick of the last key press */
@@ -41,9 +41,7 @@ void SysTick_Handler(void) {
 
 void kernel_init(void) {
     scheduler_init();
-    g_kernel.state      = KERNEL_BOOT;
-    g_kernel.app_state  = APP_HOME;
-    g_kernel.idle_count = 0;
+    s_app = APP_HOME;
 }
 
 void kernel_run(void) {
@@ -52,7 +50,6 @@ void kernel_run(void) {
     scheduler_add_task("display", task_display, TASK_PRIO_NORMAL);
     scheduler_add_task("app",     task_shell,   TASK_PRIO_NORMAL);
 
-    g_kernel.state = KERNEL_RUNNING;
     s_last_input = g_tick_ms;
 
     /* Each task sleeps one tick after it runs; when none is ready the
@@ -65,7 +62,6 @@ void kernel_run(void) {
 
 /* ── Built-in tasks ──────────────────────────────────────────── */
 void task_idle(void) {
-    g_kernel.idle_count++;
     /* Sleep until the next interrupt (SysTick at the latest). Interrupts
      * are masked around the check so a tick that wakes a task between
      * the check and WFI isn't missed: WFI still wakes on a pending
@@ -155,14 +151,14 @@ static void battery_check(void) {
     if (battery_level() == BAT_EMPTY && prev != BAT_EMPTY && !battery_usb_powered())
         hal_uart_puts("battery: nearly empty\n");
     prev = battery_level();
-    if (g_kernel.app_state == APP_HOME) home_draw_status();
+    if (s_app == APP_HOME) home_draw_status();
 }
 
 /* App dispatch */
 void task_shell(void) {
     kernel_event_t ev;
     while (kernel_event_get(&ev)) {
-        switch (g_kernel.app_state) {
+        switch (s_app) {
             case APP_HOME:         home_handle_event(&ev);          break;
             case APP_CALCULATOR:   calculator_handle_event(&ev);    break;
             case APP_FUNCTIONS:    functions_handle_event(&ev);     break;
@@ -182,7 +178,7 @@ void task_shell(void) {
         }
     }
     /* Apps that do work between key presses */
-    switch (g_kernel.app_state) {
+    switch (s_app) {
         case APP_TETRIS: tetris_tick(); break;
         case APP_SNAKE:  snake_tick();  break;
         case APP_SHELL:  shell_tick();  break;
@@ -190,7 +186,7 @@ void task_shell(void) {
     }
     if (s_redraw_pending) {
         s_redraw_pending = false;
-        kernel_set_app(g_kernel.app_state);
+        kernel_set_app(s_app);
     }
     usb_cdc_process();
     battery_check();
@@ -222,11 +218,11 @@ void kernel_request_redraw(void) {
 }
 
 app_state_t kernel_get_app(void) {
-    return g_kernel.app_state;
+    return s_app;
 }
 
 void kernel_set_app(app_state_t app) {
-    g_kernel.app_state = app;
+    s_app = app;
     /* Trigger redraw for the new app */
     switch (app) {
         case APP_HOME:         home_redraw();              break;

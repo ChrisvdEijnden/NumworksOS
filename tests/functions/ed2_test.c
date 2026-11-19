@@ -44,6 +44,11 @@ bool flashfs_exists(const char *p) { return !strcmp(p, fname); }
 int flashfs_write(const char *p, const void *d, uint32_t n) { strcpy(fname, p); memcpy(fdata, d, n); flen = n; return (int)n; }
 int flashfs_open_read(const char *p, uint32_t *o, uint32_t *s) { if (strcmp(p, fname)) return -1; *o = 0; *s = flen; return 0; }
 int flashfs_read(uint32_t o, void *b, uint32_t l) { memcpy(b, fdata + o, l); return (int)l; }
+#include "../../fs/flashfs.h"
+#include "../../ui/filemanager.h"
+int flashfs_ls(void (*cb)(const ffs_entry_t *, void *), void *ctx) { ffs_entry_t e = {0}; strcpy(e.name, fname); e.size = flen; cb(&e, ctx); return 1; }
+int flashfs_delete(const char *p) { (void)p; return -1; }
+bool et_modified(void);
 static int fails = 0;
 static void check(int c, const char *w) { printf("  %s %s\n", c ? "ok  " : "FAIL", w); if (!c) fails++; }
 static void ek(key_code_t k) { memset(rows, 0, sizeof rows); left_mark = right_mark = 0; kernel_event_t e = { .key = k, .action = 0 }; text_editor_handle_event(&e); }
@@ -91,6 +96,14 @@ int main(void) {
     strcpy(fname, "t.txt");
     text_editor_open("t.txt"); nruns = 0; text_editor_redraw();
     check(drawn("def f(x):  # hi", 0), "a .txt file: each line in black");
+    /* Files: opening a file over unsaved changes takes OK twice */
+    ek(KEY_1);
+    fm_redraw();
+    kernel_event_t ok = { .key = KEY_EXE, .action = 0 };
+    fm_handle_event(&ok);
+    check(et_modified(), "Files, OK with unsaved changes: they are kept");
+    fm_handle_event(&ok);
+    check(!et_modified(), "OK again: the file opens, the changes are dropped");
     printf("%s (%d failure%s)\n", fails ? "FAILED" : "ALL PASSED", fails, fails == 1 ? "" : "s");
     return fails != 0;
 }

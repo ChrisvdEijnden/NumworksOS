@@ -47,6 +47,7 @@ static int       s_nitem  = 0;
 static int       s_cursor = 0;
 static int       s_scroll = 0;
 static bool      s_del_armed = false;   /* SHIFT pressed once: confirm delete */
+static bool      s_drop_armed = false;  /* OK/VAR once more drops the editor's unsaved text */
 static const char *s_msg = "";          /* one-shot footer message */
 
 /* ── Load file list ──────────────────────────────────────────── */
@@ -154,6 +155,8 @@ void fm_handle_event(const kernel_event_t *ev) {
     bool redraw = false;
 
     s_msg = "";
+    bool drop = s_drop_armed;
+    s_drop_armed = false;
     /* Deleting takes SHIFT twice; any other key cancels */
     if (s_del_armed) {
         s_del_armed = false;
@@ -173,15 +176,20 @@ void fm_handle_event(const kernel_event_t *ev) {
             if (s_cursor < s_scroll) s_scroll--;
             redraw = true;
         }
-    } else if (key_is_exe(k)) {
-        fm_open();
+    } else if (key_is_exe(k) || k == KEY_VAR) {
+        if (text_editor_modified() && !drop) {
+            s_drop_armed = true;
+            s_msg = TR("Editor niet opgeslagen: nogmaals = wissen", "Editor not saved: again = discard");
+            draw_footer();
+        } else if (k == KEY_VAR) {
+            text_editor_new();
+            kernel_set_app(APP_TEXT_EDITOR);
+        } else {
+            fm_open();
+        }
         return;
     } else if (k == KEY_SHIFT) {
         if (s_nitem > 0) { s_del_armed = true; draw_footer(); }
-        return;
-    } else if (k == KEY_VAR) {
-        text_editor_new();
-        kernel_set_app(APP_TEXT_EDITOR);
         return;
     } else if (k == KEY_BACK || k == KEY_HOME) {
         kernel_set_app(APP_HOME);

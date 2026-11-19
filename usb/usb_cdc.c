@@ -11,7 +11,7 @@
  *   DEL <name>         -> "OK"
  *   Any failure        -> "ERR <reason>"
  *
- * The PC side is tools/upload.py (and tools/transfer.py).
+ * The PC side is tools/upload.py.
  *
  * The protocol only talks to two ring buffers. The USB device stack
  * (usb/usb_device.c) moves bytes in and out of them with
@@ -179,9 +179,14 @@ static void handle_command(char *cmd) {
         if (!name_ok(name))              { reply("ERR bad_name");  return; }
         if (size > FFS_MAX_FILE_SIZE)    { reply("ERR too_large"); return; }
         /* The old file stays until the new one is complete. If both
-         * don't fit, replace it: delete first, then write. */
+         * don't fit, replace it: delete first, then write, but only if
+         * the new one fits once the old one is gone. */
+        uint32_t used, room, off, old = 0;
+        flashfs_stats(&used, &room);
+        flashfs_open_read(name, &off, &old);
         if (flashfs_stream_begin(name, (uint32_t)size) != 0 &&
-            !(!flashfs_stream_active() && flashfs_exists(name) && flashfs_delete(name) == 0 &&
+            !(!flashfs_stream_active() && ((size + 3) & ~3UL) <= room + ((old + 3) & ~3UL) &&
+              flashfs_exists(name) && flashfs_delete(name) == 0 &&
               flashfs_stream_begin(name, (uint32_t)size) == 0)) {
             reply("ERR no_space");
             return;
